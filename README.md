@@ -120,6 +120,29 @@ entero sin abrir una ventana.
   aspecto sin jugar a mano:
   `godot --path . res://tests/shot.tscn -- C:\ruta\de\salida`
 
+## Creditos
+
+El **codigo** de este repositorio es propio. Los sprites y sonidos **no se
+distribuyen aqui**: `assets/sprites/` y `assets/sounds/` estan excluidas del
+repo a proposito, y sin ellas el juego funciona con los procedurales.
+
+| Que | De donde | Autoria |
+|---|---|---|
+| Diseno, sprites y efectos de sonido originales | Pac-Man arcade (1980) | (c) Bandai Namco Entertainment Inc. |
+| Los archivos concretos que uso en local | [bward2/pacman-js](https://github.com/bward2/pacman-js) | recopilacion de Brent Ward (MIT, 2020) |
+| Motor | [Godot Engine 4.7](https://godotengine.org) | Juan Linietsky, Ariel Manzur y colaboradores (MIT) |
+| Sprites y sonidos procedurales de respaldo | este repositorio | propios |
+| Reglas de IA, tablas de velocidad y temporizacion | [The Pac-Man Dossier](https://pacman.holenet.info/), de Jamey Pittman | documentacion de referencia |
+
+Matiz importante sobre la segunda fila: la licencia MIT de `pacman-js` cubre
+**el codigo de Brent Ward**, no los sprites ni los sonidos del arcade que ese
+repositorio incluye. Esos siguen siendo propiedad de Bandai Namco, vengan de
+donde vengan. Por eso aqui se usan solo en local y nunca se suben.
+
+Pac-Man es una marca registrada de Bandai Namco Entertainment Inc. Esto es un
+ejercicio personal de programacion, sin animo de lucro y sin relacion ni
+respaldo de Bandai Namco.
+
 ## Sustituir sprites y sonidos
 
 Ver [`assets/README.md`](assets/README.md). Resumen: copia los archivos con los

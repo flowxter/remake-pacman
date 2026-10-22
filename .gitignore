@@ -1,7 +1,6 @@
 # Godot 4
 .godot/
 /android/
-export_presets.cfg
 *.translation
 
 # Builds
@@ -12,3 +11,8 @@ export_presets.cfg
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Assets originales de Bandai Namco: uso local, nunca se publican.
+# El juego usa los sprites y sonidos procedurales si estas carpetas estan vacias.
+assets/sprites/
+assets/sounds/

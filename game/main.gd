@@ -54,11 +54,16 @@ func _ready() -> void:
 	menu.name = "Menu"
 	menu.asset_note = bank.report()
 	menu.play_requested.connect(_on_play)
+	menu.ui_sound.connect(_on_ui_sound)
 	ui.add_child(menu)
 
 	_load_high_score()
 	hud.high_score = high_score
 	print(bank.report())
+
+
+func _on_ui_sound(sound_name: String) -> void:
+	audio.play(sound_name, 1.0, -2.0)
 
 
 # -- menu / partida ----------------------------------------------------------
@@ -80,6 +85,7 @@ func _start_game() -> void:
 	hud.sim = sim
 	hud.high_score = high_score
 	_layout()
+	audio.stop_ambient()
 	audio.play("ready")
 	menu.visible = false
 	view.visible = true
@@ -152,6 +158,11 @@ func _layout() -> void:
 # -- bucle -------------------------------------------------------------------
 
 func _process(dt: float) -> void:
+	if state == State.MENU:
+		# set_ambient no reinicia si ya suena, asi que esto tambien recupera
+		# la musica despues de quitar el silencio.
+		audio.set_ambient("menu_music", 1.0)
+		return
 	if state != State.PLAYING or sim == null:
 		return
 	sim.update(dt)

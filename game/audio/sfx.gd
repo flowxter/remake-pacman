@@ -23,6 +23,9 @@ static func build_all() -> Dictionary:
 		"extra_life": _extra_life(),
 		"fruit": _fruit(),
 		"ready": _ready_jingle(),
+		"menu_move": _blip(620.0, 0.045),
+		"menu_change": _blip(880.0, 0.04),
+		"menu_select": _menu_select(),
 	}
 
 
@@ -58,6 +61,30 @@ static func _env(i: int, n: int, attack: float = 0.02, release: float = 0.25) ->
 
 
 # -- efectos -----------------------------------------------------------------
+
+## Blip corto para la navegacion del menu.
+static func _blip(freq: float, dur: float) -> AudioStreamWAV:
+	var n := int(RATE * dur)
+	var out := PackedFloat32Array()
+	out.resize(n)
+	var phase := 0.0
+	for i in range(n):
+		phase += freq / float(RATE)
+		out[i] = _square(phase, 0.5) * _env(i, n, 0.1, 0.5) * 0.18
+	return _wav(out, false)
+
+
+static func _menu_select() -> AudioStreamWAV:
+	var n := int(RATE * 0.18)
+	var out := PackedFloat32Array()
+	out.resize(n)
+	var phase := 0.0
+	for i in range(n):
+		var t := float(i) / float(n)
+		var f := 620.0 if t < 0.45 else 990.0
+		phase += f / float(RATE)
+		out[i] = _square(phase, 0.5) * _env(i, n, 0.04, 0.3) * 0.22
+	return _wav(out, false)
 
 ## El "wakka": un barrido corto de tono. El original alterna dos para que
 ## comer suene como una masticacion.

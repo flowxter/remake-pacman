@@ -98,10 +98,10 @@ func _draw_pellets() -> void:
 				continue
 			var c := Vector2(x, y)
 			if p == Maze.POWER:
-				if not _sprite("power", c, POWER_R * 2.4, 0):
+				if not _sprite("power", c, 0):
 					Painter.power_pellet(self, c, POWER_R, blink)
 			else:
-				if not _sprite("pellet", c, PELLET_R * 3.0, 0):
+				if not _sprite("pellet", c, 0):
 					draw_rect(Rect2(c - Vector2(PELLET_R, PELLET_R), Vector2(PELLET_R * 2.0, PELLET_R * 2.0)), Palette.PELLET)
 
 
@@ -110,7 +110,7 @@ func _draw_fruit() -> void:
 		return
 	var name := LevelTable.fruit_name(sim.level)
 	var c := Vector2(sim.fruit_tile)
-	if not _sprite(name, c, 1.0, 0):
+	if not _sprite(name, c, 0):
 		Painter.fruit(self, c, 0.5, name)
 
 
@@ -119,10 +119,13 @@ func _draw_pacman() -> void:
 	var c := pac.world_pos()
 	if sim.phase == GameSim.Phase.DYING:
 		var t := 1.0 - clampf(sim.phase_timer / GameSim.DEATH_TIME, 0.0, 1.0)
+		var n := bank.frame_count("pacman_death") if bank != null else 0
+		if n > 0 and _sprite("pacman_death", c, mini(int(t * float(n)), n - 1)):
+			return
 		Painter.pacman_dying(self, c, PACMAN_R, t)
 		return
 	var key := "pacman_" + _dir_name(pac.dir)
-	if _sprite(key, c, PACMAN_R * 2.2, int(pac.mouth * 2.0)):
+	if _sprite(key, c, int(pac.mouth * 2.0)):
 		return
 	Painter.pacman(self, c, PACMAN_R, pac.dir, pac.mouth)
 
@@ -135,14 +138,14 @@ func _draw_ghosts() -> void:
 			Ghost.State.FRIGHTENED:
 				var blinking := sim.fright_blinking() and fmod(anim * 6.0, 2.0) < 1.0
 				var key := "frightened_flash" if blinking else "frightened"
-				if not _sprite(key, c, GHOST_R * 2.2, int(wave)):
+				if not _sprite(key, c, int(wave)):
 					Painter.ghost_frightened(self, c, GHOST_R, blinking, wave)
 			Ghost.State.EYES, Ghost.State.ENTERING:
-				if not _sprite("eyes_" + _dir_name(g.dir), c, GHOST_R * 2.2, 0):
+				if not _sprite("eyes_" + _dir_name(g.dir), c, 0):
 					Painter.ghost_eyes(self, c, GHOST_R, g.dir)
 			_:
 				var key2 := "%s_%s" % [g.kind_name(), _dir_name(g.dir)]
-				if not _sprite(key2, c, GHOST_R * 2.2, int(wave)):
+				if not _sprite(key2, c, int(wave)):
 					Painter.ghost(self, c, GHOST_R, g.dir, Palette.ghost_body(g.index), wave)
 
 
@@ -163,13 +166,17 @@ func _draw_popups() -> void:
 
 ## Dibuja un sprite de assets/ si existe. Devuelve false si hay que recurrir
 ## al dibujo procedural.
-func _sprite(key: String, center: Vector2, size: float, frame_i: int) -> bool:
+func _sprite(key: String, center: Vector2, frame_i: int) -> bool:
 	if bank == null:
 		return false
 	var tex := bank.frame(key, frame_i)
 	if tex == null:
 		return false
-	draw_texture_rect(tex, Rect2(center - Vector2(size, size) * 0.5, Vector2(size, size)), false)
+	# Los sprites del arcade estan hechos para tiles de 8 px: uno de 16x16
+	# ocupa 2 tiles y el punto de 2x2 ocupa un cuarto. Sacando el tamano del
+	# propio archivo salen a su escala real sin ajustarlo a mano.
+	var sz := Vector2(tex.get_width(), tex.get_height()) / float(Maze.TILE_PX)
+	draw_texture_rect(tex, Rect2(center - sz * 0.5, sz), false)
 	return true
 
 

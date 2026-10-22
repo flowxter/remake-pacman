@@ -1,0 +1,46 @@
+PAC-MAN REMAKE
+==============
+
+Para jugar: doble clic en PacManRemake.exe
+No hay que instalar nada.
+
+Cada nivel genera un laberinto distinto, y antes de empezar se puede
+ajustar la dificultad desde el menu.
+
+
+CONTROLES
+---------
+  Flechas o WASD   mover
+  ENTER            empezar la partida (en el menu)
+  P                pausa
+  M                silencio
+  N                generar otro laberinto en el mismo nivel
+  R                reiniciar la partida
+  ESC              volver al menu
+
+En el menu: flechas arriba/abajo para moverse, izquierda/derecha para
+cambiar el valor de la fila. En la fila SEMILLA se pueden teclear numeros:
+la misma semilla da siempre los mismos laberintos.
+
+
+LA CARPETA ASSETS
+-----------------
+Los sprites y sonidos estan en la carpeta "assets", al lado del .exe.
+Si la borras el juego sigue funcionando: dibuja los graficos por codigo y
+sintetiza el sonido. Tambien puedes sustituir archivos sueltos por otros;
+en assets/README.md estan los nombres que espera.
+
+
+CREDITOS
+--------
+  Codigo         propio, hecho con Godot Engine 4.7 (licencia MIT)
+  Sprites y      del Pac-Man arcade de 1980,
+  sonidos        (c) Bandai Namco Entertainment Inc.
+                 Archivos tomados de github.com/bward2/pacman-js
+                 (MIT, Brent Ward, 2020). Esa licencia cubre su codigo,
+                 no el material original de Namco.
+  Reglas de IA   The Pac-Man Dossier, de Jamey Pittman
+
+Pac-Man es marca registrada de Bandai Namco Entertainment Inc.
+Proyecto personal de aprendizaje, sin animo de lucro y sin relacion ni
+respaldo de Bandai Namco.

@@ -65,7 +65,6 @@ func _load_sprites(dir_path: String) -> void:
 		if img == null:
 			push_warning("no se pudo leer el sprite %s" % file_name)
 			continue
-		var tex := ImageTexture.create_from_image(img)
 		var key := file_name.get_basename()
 		# "pacman_right_2" -> grupo "pacman_right", fotograma 2
 		var parts := key.split("_")
@@ -75,8 +74,29 @@ func _load_sprites(dir_path: String) -> void:
 		if not frames.has(key):
 			frames[key] = [] as Array[Texture2D]
 		var arr: Array = frames[key]
-		arr.append(tex)
+		for tex in _slice_strip(img):
+			arr.append(tex)
 		sprite_files += 1
+
+
+## Los spritesheets del arcade vienen como tiras horizontales de fotogramas
+## cuadrados: Pac-Man es 64x16 (4 fotogramas) y cada fantasma 32x16 (2). Si
+## la imagen es un multiplo entero de su alto, se parte sola; si es cuadrada,
+## es un unico fotograma. Asi se pueden copiar las tiras tal cual, sin
+## recortarlas antes a mano.
+func _slice_strip(img: Image) -> Array[Texture2D]:
+	var out: Array[Texture2D] = []
+	var w := img.get_width()
+	var h := img.get_height()
+	if h <= 0:
+		return out
+	if w == h or w < h or w % h != 0:
+		out.append(ImageTexture.create_from_image(img))
+		return out
+	for i in range(int(w / h)):
+		var part := img.get_region(Rect2i(i * h, 0, h, h))
+		out.append(ImageTexture.create_from_image(part))
+	return out
 
 
 func _load_sounds(dir_path: String) -> void:
@@ -89,24 +109,46 @@ func _load_sounds(dir_path: String) -> void:
 		var stream: AudioStream = null
 		if ext == "ogg":
 			stream = AudioStreamOggVorbis.load_from_file(full)
+		elif ext == "mp3":
+			stream = AudioStreamMP3.load_from_file(full)
 		elif ext == "wav":
 			stream = load_wav(full)
 		if stream == null:
 			continue
 		var key := file_name.get_basename()
-		if key in ["siren", "fright"] and stream is AudioStreamWAV:
-			var w: AudioStreamWAV = stream
-			w.loop_mode = AudioStreamWAV.LOOP_FORWARD
-			w.loop_begin = 0
-			w.loop_end = int(w.data.size() / (2 if w.format == AudioStreamWAV.FORMAT_16_BITS else 1))
+		if key in LOOPING:
+			_force_loop(stream)
 		sounds[key] = stream
 		sound_files += 1
+
+
+## Sonidos que suenan en bucle. El archivo original no trae marcas de loop,
+## asi que se ponen aqui segun para que se usa cada uno.
+const LOOPING := ["siren", "fright", "menu_music"]
+
+
+func _force_loop(stream: AudioStream) -> void:
+	if stream is AudioStreamWAV:
+		var w: AudioStreamWAV = stream
+		w.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		w.loop_begin = 0
+		w.loop_end = int(w.data.size() / (2 if w.format == AudioStreamWAV.FORMAT_16_BITS else 1))
+	elif stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
+	elif stream is AudioStreamOggVorbis:
+		(stream as AudioStreamOggVorbis).loop = true
 
 
 # -- consulta ----------------------------------------------------------------
 
 func has_frames(key: String) -> bool:
 	return frames.has(key) and not (frames[key] as Array).is_empty()
+
+
+func frame_count(key: String) -> int:
+	if not has_frames(key):
+		return 0
+	return (frames[key] as Array).size()
 
 
 ## Fotograma `i` del grupo `key`, ciclando. null si no hay override.
